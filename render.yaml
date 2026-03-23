@@ -17,12 +17,13 @@ services:
       - key: FRONTEND_URL
         fromService:
           name: emergency-frontend
-          type: static
+          type: web
           property: url
 
   # Frontend Static Site
-  - type: static
+  - type: web
     name: emergency-frontend
+    env: static
     plan: free
     rootDirectory: client
     buildCommand: npm install && npm run build
