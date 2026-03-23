@@ -22,7 +22,7 @@ services:
       # Optional: Add other env vars here (TWILIO, EMAIL, etc.)
 
   # Frontend Static Site
-  - type: static_site
+  - type: static
     name: emergency-frontend
     env: static
     plan: free
