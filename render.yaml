@@ -17,7 +17,7 @@ services:
       - key: FRONTEND_URL
         fromService:
           name: emergency-frontend
-          type: static_site
+          type: static
           property: url
       # Optional: Add other env vars here (TWILIO, EMAIL, etc.)
 
