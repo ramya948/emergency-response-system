@@ -19,12 +19,10 @@ services:
           name: emergency-frontend
           type: static
           property: url
-      # Optional: Add other env vars here (TWILIO, EMAIL, etc.)
 
   # Frontend Static Site
   - type: static
     name: emergency-frontend
-    env: static
     plan: free
     rootDirectory: client
     buildCommand: npm install && npm run build
