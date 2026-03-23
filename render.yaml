@@ -1,5 +1,4 @@
 services:
-  # Backend Web Service
   - type: web
     name: emergency-backend
     env: node
@@ -7,34 +6,11 @@ services:
     buildCommand: npm install
     startCommand: node server/server.js
     envVars:
-      - key: MONGO_URI
-        sync: false
-        placeholder: "Enter your MongoDB URI"
-      - key: JWT_SECRET
-        generateValue: true
       - key: NODE_ENV
         value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
       - key: FRONTEND_URL
-        fromService:
-          type: static_site
-          name: emergency-frontend
-          property: url
-
-staticSites:
-  # Frontend Static Site
-  - name: emergency-frontend
-    plan: free
-    rootDirectory: client
-    buildCommand: npm install && npm run build
-    publishDir: dist
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          name: emergency-backend
-          type: web
-          property: url
-      - key: VITE_SOCKET_URL
-        fromService:
-          name: emergency-backend
-          type: web
-          property: url
+        sync: false
