@@ -1,8 +1,9 @@
-import { NavLink } from 'react-router-dom';
 import {
-    Home, AlertTriangle, Radio, Users, ShieldCheck, Bell, Map, Activity
+    Home, AlertTriangle, Radio, Users, ShieldCheck, Bell, Map, Activity, LogOut
 } from 'lucide-react';
 import { useEmergency } from '../../context/EmergencyContext';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate, NavLink } from 'react-router-dom';
 
 const navItems = [
     { to: '/', label: 'Home', icon: Home },
@@ -16,6 +17,13 @@ const navItems = [
 
 const Sidebar = () => {
     const { stats, connected } = useEmergency();
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     return (
         <aside className="sidebar">
@@ -63,8 +71,14 @@ const Sidebar = () => {
             </nav>
 
             <div className="sidebar-footer">
-                <p>AI Emergency Response</p>
-                <p>v1.0.0</p>
+                <button onClick={handleLogout} className="logout-btn">
+                    <LogOut size={20} />
+                    <span>Logout</span>
+                </button>
+                <div className="footer-info">
+                    <p>AI Emergency Response</p>
+                    <p>v1.0.0</p>
+                </div>
             </div>
         </aside>
     );

@@ -308,11 +308,34 @@ button {
   color: var(--red);
 }
 
-.app-info {
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-weight: 500;
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.logout-btn:hover {
+  color: var(--red);
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.1);
+}
+
+.footer-info {
   padding-top: 1rem;
   font-size: 0.75rem;
   color: var(--text-muted);
   text-align: center;
+  border-top: 1px dashed var(--border);
 }
 
 /* --- Buttons & Inputs --- */

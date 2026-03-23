@@ -17,7 +17,12 @@ const app = express();
 const server = http.createServer(app);
 
 // Allow any localhost port (so Vite port changes never break CORS)
-const isAllowedOrigin = (origin) => !origin || /^http:\/\/localhost(:\d+)?$/.test(origin);
+const isAllowedOrigin = (origin) => {
+    if (!origin) return true;
+    if (/^http:\/\/localhost(:\d+)?$/.test(origin)) return true;
+    if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL.replace(/\/$/, '')) return true;
+    return false;
+};
 
 // Socket.io setup
 const io = new Server(server, {
