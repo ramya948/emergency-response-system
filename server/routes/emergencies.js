@@ -40,11 +40,15 @@ router.post('/', async (req, res) => {
 
         // Try to send Email notification (non-blocking)
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS && process.env.ADMIN_EMAIL) {
+            const dns = require('dns');
             const transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
                 port: 465,
                 secure: true,
-                family: 4, // Force IPv4 to prevent ENETUNREACH on Render Free Tier
+                // Force IPv4 DNS lookup — fixes ENETUNREACH on Render Free Tier
+                lookup: (hostname, options, callback) => {
+                    dns.lookup(hostname, { ...options, family: 4 }, callback);
+                },
                 auth: {
                     user: process.env.EMAIL_USER,
                     pass: process.env.EMAIL_PASS
