@@ -1,4 +1,6 @@
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
+// Force IPv4 DNS resolution globally — fixes ENETUNREACH on Render Free Tier
+require('dns').setDefaultResultOrder('ipv4first');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
