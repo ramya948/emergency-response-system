@@ -129,7 +129,10 @@ router.post('/', async (req, res) => {
                 subject: `🚨 New Emergency Report: ${emergencyType}${emergency.isSOS ? ' [SOS]' : ''} — ${name}`,
                 html: htmlBody
             };
-            transporter.sendMail(mailOptions).catch(err => console.error('Failed to send email:', err.message));
+            console.log(`📧 Attempting to send email to ${process.env.ADMIN_EMAIL}...`);
+            transporter.sendMail(mailOptions)
+                .then(info => console.log(`✅ Email sent successfully! ID: ${info.messageId}`))
+                .catch(err => console.error('❌ Failed to send email:', err.message));
         }
 
         // Try to send SMS notification via Twilio (non-blocking)
