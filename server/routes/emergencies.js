@@ -41,10 +41,20 @@ router.post('/', async (req, res) => {
         // Try to send Email notification (non-blocking)
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS && process.env.ADMIN_EMAIL) {
             const dns = require('dns');
-            const transporter = nodemailer.createTransport({
+            // Use Brevo SMTP relay if configured (works on Render), else fall back to Gmail (works locally)
+            const useBrevo = process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASS;
+            const transporter = nodemailer.createTransport(useBrevo ? {
+                host: 'smtp-relay.brevo.com',
+                port: 587,
+                secure: false,
+                auth: {
+                    user: process.env.BREVO_SMTP_USER,
+                    pass: process.env.BREVO_SMTP_PASS
+                }
+            } : {
                 host: 'smtp.gmail.com',
                 port: 587,
-                secure: false,        // use STARTTLS (port 587) instead of SSL (port 465)
+                secure: false,
                 requireTLS: true,
                 lookup: (hostname, options, callback) => {
                     dns.lookup(hostname, { ...options, family: 4 }, callback);
