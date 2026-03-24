@@ -91,7 +91,7 @@ const MapTracking = () => {
         : defaultCenter;
 
     return (
-        <div className="page map-page" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+        <div className="page map-page">
             {/* Header */}
             <div className="page-header" style={{ flexShrink: 0 }}>
                 <div>
@@ -111,10 +111,10 @@ const MapTracking = () => {
             </div>
 
             {/* Map + Sidebar */}
-            <div style={{ display: 'flex', flex: 1, gap: '16px', minHeight: 0, padding: '0 0 16px 0' }}>
+            <div className="map-layout-wrapper">
 
                 {/* Map */}
-                <div style={{ flex: 1, borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', minWidth: 0 }}>
+                <div className="map-view-container">
                     <MapContainer center={initialCenter} zoom={12} style={{ height: '100%', width: '100%' }}>
                         {/* ✅ White / Light tile layer */}
                         <TileLayer
@@ -167,14 +167,7 @@ const MapTracking = () => {
                 </div>
 
                 {/* Active Alerts Sidebar */}
-                <div style={{
-                    width: '300px',
-                    flexShrink: 0,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px',
-                    overflowY: 'auto',
-                }}>
+                <div className="map-alerts-sidebar">
                     <div style={{
                         background: 'var(--card)',
                         borderRadius: '12px',

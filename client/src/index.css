@@ -1650,4 +1650,46 @@ select:focus {
   .type-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ========================================= */
+/* --- Map Layout Adjustments --- */
+/* ========================================= */
+.map-layout-wrapper {
+  display: flex;
+  flex: 1;
+  gap: 16px;
+  min-height: 0;
+  padding: 0 0 16px 0;
+}
+
+.map-view-container {
+  flex: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  min-width: 0;
+}
+
+.map-alerts-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .map-layout-wrapper {
+    flex-direction: column;
+  }
+  .map-view-container {
+    min-height: 400px;
+    flex: none;
+  }
+  .map-alerts-sidebar {
+    width: 100%;
+    overflow: visible; /* Let it scroll naturally with the page */
+  }
 }
