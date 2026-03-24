@@ -1685,7 +1685,7 @@ select:focus {
     flex-direction: column;
   }
   .map-view-container {
-    min-height: 400px;
+    height: 400px;
     flex: none;
   }
   .map-alerts-sidebar {
