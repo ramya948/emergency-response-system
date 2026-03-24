@@ -161,13 +161,24 @@ router.post('/', async (req, res) => {
         }
 
         // Try to send SMS notification via Twilio (non-blocking)
-        if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_PHONE_NUMBER && process.env.ADMIN_PHONE) {
-            const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+        const hasTwilio = process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_PHONE_NUMBER && process.env.ADMIN_PHONE;
+        if (hasTwilio) {
+            console.log(`📱 Attempting to send SMS to ${process.env.ADMIN_PHONE}...`);
+            const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
             client.messages.create({
                 body: `🚨 New Emergency (${emergencyType}) reported by ${name} at ${location}. Details: ${description}`,
                 from: process.env.TWILIO_PHONE_NUMBER,
                 to: process.env.ADMIN_PHONE
-            }).catch(err => console.error('Failed to send SMS:', err.message));
+            })
+            .then(message => console.log(`✅ SMS sent! ID: ${message.sid}`))
+            .catch(err => console.error('❌ Failed to send SMS:', err.message));
+        } else {
+            console.log('⚠️ Skipping SMS: Missing Twilio env variables', {
+                sid: !!process.env.TWILIO_ACCOUNT_SID,
+                token: !!process.env.TWILIO_AUTH_TOKEN,
+                from: !!process.env.TWILIO_PHONE_NUMBER,
+                to: !!process.env.ADMIN_PHONE
+            });
         }
 
         res.status(201).json(emergency);
