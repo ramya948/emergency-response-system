@@ -40,31 +40,6 @@ router.post('/', async (req, res) => {
 
         // Try to send Email notification (non-blocking)
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS && process.env.ADMIN_EMAIL) {
-            const dns = require('dns');
-            // Use Brevo SMTP relay if configured (works on Render), else fall back to Gmail (works locally)
-            const useBrevo = process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASS;
-            const transporter = nodemailer.createTransport(useBrevo ? {
-                host: 'smtp-relay.brevo.com',
-                port: 587,
-                secure: false,
-                auth: {
-                    user: process.env.BREVO_SMTP_USER,
-                    pass: process.env.BREVO_SMTP_PASS
-                }
-            } : {
-                host: 'smtp.gmail.com',
-                port: 587,
-                secure: false,
-                requireTLS: true,
-                lookup: (hostname, options, callback) => {
-                    dns.lookup(hostname, { ...options, family: 4 }, callback);
-                },
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS
-                }
-            });
-
             const createdTime = new Date(emergency.createdAt).toLocaleString('en-IN', {
                 timeZone: 'Asia/Kolkata',
                 dateStyle: 'full',
@@ -134,16 +109,55 @@ router.post('/', async (req, res) => {
                 </div>
             </div>`;
 
-            const mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: process.env.ADMIN_EMAIL,
-                subject: `🚨 New Emergency Report: ${emergencyType}${emergency.isSOS ? ' [SOS]' : ''} — ${name}`,
-                html: htmlBody
-            };
-            console.log(`📧 Attempting to send email to ${process.env.ADMIN_EMAIL}...`);
-            transporter.sendMail(mailOptions)
-                .then(info => console.log(`✅ Email sent successfully! ID: ${info.messageId}`))
-                .catch(err => console.error('❌ Failed to send email:', err.message));
+            // Use Resend API if key exists (works on Render via HTTPS), else fall back to Gmail SMTP (localhost)
+            if (process.env.RESEND_API_KEY) {
+                console.log('📧 Sending email via Resend API...');
+                fetch('https://api.resend.com/emails', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        from: 'EmergencyAI <onboarding@resend.dev>',
+                        to: [process.env.ADMIN_EMAIL],
+                        subject: `🚨 New Emergency: ${emergencyType}${emergency.isSOS ? ' [SOS]' : ''} — ${name}`,
+                        html: htmlBody
+                    })
+                })
+                .then(r => r.json())
+                .then(result => {
+                    if (result.id) console.log('✅ Email sent via Resend! ID:', result.id);
+                    else console.error('❌ Resend error:', JSON.stringify(result));
+                })
+                .catch(err => console.error('❌ Resend fetch error:', err.message));
+            } else {
+                const dns = require('dns');
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    port: 587,
+                    secure: false,        // use STARTTLS (port 587) instead of SSL (port 465)
+                    requireTLS: true,
+                    lookup: (hostname, options, callback) => {
+                        dns.lookup(hostname, { ...options, family: 4 }, callback);
+                    },
+                    auth: {
+                        user: process.env.EMAIL_USER,
+                        pass: process.env.EMAIL_PASS
+                    }
+                });
+
+                const mailOptions = {
+                    from: process.env.EMAIL_USER,
+                    to: process.env.ADMIN_EMAIL,
+                    subject: `🚨 New Emergency Report: ${emergencyType}${emergency.isSOS ? ' [SOS]' : ''} — ${name}`,
+                    html: htmlBody
+                };
+                console.log(`📧 Attempting to send email to ${process.env.ADMIN_EMAIL}...`);
+                transporter.sendMail(mailOptions)
+                    .then(info => console.log(`✅ Email sent successfully! ID: ${info.messageId}`))
+                    .catch(err => console.error('❌ Failed to send email:', err.message));
+            }
         }
 
         // Try to send SMS notification via Twilio (non-blocking)
