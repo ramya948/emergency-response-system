@@ -22,6 +22,7 @@ const server = http.createServer(app);
 const isAllowedOrigin = (origin) => {
     if (!origin) return true;
     if (/^http:\/\/localhost(:\d+)?$/.test(origin)) return true;
+    if (origin === 'https://emergency-response-system-five.vercel.app') return true;
     if (origin === 'https://emergency-frontend-8g0g.onrender.com') return true;
     if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL.replace(/\/$/, '')) return true;
     return false;
