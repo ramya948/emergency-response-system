@@ -20,12 +20,8 @@ const server = http.createServer(app);
 
 // Allow any localhost port (so Vite port changes never break CORS)
 const isAllowedOrigin = (origin) => {
-    if (!origin) return true;
-    if (/^http:\/\/localhost(:\d+)?$/.test(origin)) return true;
-    if (origin === 'https://emergency-response-system-five.vercel.app') return true;
-    if (/^https:\/\/.*\.onrender\.com$/.test(origin)) return true;
-    if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL.replace(/\/$/, '')) return true;
-    return false;
+    // Temporarily allowing all origins to fix Render deployment CORS issues
+    return true;
 };
 
 // Socket.io setup
